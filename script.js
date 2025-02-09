@@ -1,88 +1,113 @@
-function startBreathing() {
-    let container = document.getElementById('exercise-container');
-    container.innerHTML = '<h2>Дыхательное упражнение</h2><p>Вдохни...</p>';
+let currentExercise = null;
+let exerciseInterval;
 
-    let circle = document.createElement('div');
-    circle.style.width = '50px';
-    circle.style.height = '50px';
-    circle.style.background = 'blue';
-    circle.style.borderRadius = '50%';
-    circle.style.margin = '20px auto';
-    container.appendChild(circle);
+function startExercise(type) {
+    document.getElementById("exercise-container").classList.add("hidden");
+    document.getElementById("exercise-display").classList.remove("hidden");
+    currentExercise = type;
 
-    let breathPhases = [
-        { text: 'Вдох (4 секунды)', size: '150px', color: 'green' },
-        { text: 'Задержка (4 секунды)', size: '150px', color: 'red' },
-        { text: 'Выдох (6 секунд)', size: '50px', color: 'blue' }
-    ];
-
-    let i = 0;
-    function updateBreath() {
-        if (i >= breathPhases.length) {
-            i = 0;
-        }
-        circle.style.width = breathPhases[i].size;
-        circle.style.height = breathPhases[i].size;
-        circle.style.background = breathPhases[i].color;
-        container.children[1].textContent = breathPhases[i].text;
-        i++;
-        setTimeout(updateBreath, 4000);
+    if (type === "breathing") {
+        startBreathingExercise();
+    } else if (type === "54321") {
+        start54321Method();
+    } else if (type === "colorTherapy") {
+        startColorTherapy();
+    } else if (type === "relaxation") {
+        startRelaxation();
     }
-
-    updateBreath();
 }
 
-function start54321() {
-    let container = document.getElementById('exercise-container');
-    container.innerHTML = '<h2>Метод 5-4-3-2-1</h2><p>Назови 5 предметов вокруг себя...</p>';
-    setTimeout(() => {
-        container.innerHTML += '<p>Назови 4 звука...</p>';
-    }, 5000);
-    setTimeout(() => {
-        container.innerHTML += '<p>Назови 3 запаха...</p>';
-    }, 10000);
-    setTimeout(() => {
-        container.innerHTML += '<p>Назови 2 вкуса...</p>';
-    }, 15000);
-    setTimeout(() => {
-        container.innerHTML += '<p>Назови 1 ощущение...</p>';
-    }, 20000);
+function stopExercise() {
+    clearInterval(exerciseInterval);
+    document.getElementById("exercise-container").classList.remove("hidden");
+    document.getElementById("exercise-display").classList.add("hidden");
+}
+
+function startBreathingExercise() {
+    let steps = [
+        { text: "Вдохни (4 секунды)...", size: "200px", color: "green" },
+        { text: "Задержи дыхание (4 секунды)...", size: "200px", color: "red" },
+        { text: "Выдохни (6 секунд)...", size: "50px", color: "blue" }
+    ];
+
+    let index = 0;
+    document.getElementById("breathing-circle").style.display = "block";
+
+    function updateStep() {
+        let step = steps[index];
+        document.getElementById("instruction-text").innerText = step.text;
+        document.getElementById("breathing-circle").style.width = step.size;
+        document.getElementById("breathing-circle").style.height = step.size;
+        document.getElementById("breathing-circle").style.backgroundColor = step.color;
+
+        index = (index + 1) % steps.length;
+    }
+
+    updateStep();
+    exerciseInterval = setInterval(updateStep, 4000);
+}
+
+function start54321Method() {
+    let steps = [
+        "Назови 5 предметов вокруг себя.",
+        "Назови 4 вещи, которые можешь потрогать.",
+        "Назови 3 звука, которые слышишь.",
+        "Назови 2 запаха вокруг.",
+        "Назови 1 ощущение в теле."
+    ];
+
+    let index = 0;
+    document.getElementById("instruction-text").innerText = steps[index];
+
+    function updateStep() {
+        index++;
+        if (index < steps.length) {
+            document.getElementById("instruction-text").innerText = steps[index];
+        } else {
+            clearInterval(exerciseInterval);
+            document.getElementById("instruction-text").innerText = "Ты молодец! Чувствуешь себя лучше?";
+        }
+    }
+
+    exerciseInterval = setInterval(updateStep, 6000);
 }
 
 function startColorTherapy() {
-    let container = document.getElementById('exercise-container');
-    container.innerHTML = '<h2>Цветотерапия</h2><p>Смотри на цвет и назови его про себя...</p>';
+    let colors = ["red", "blue", "green", "yellow", "purple"];
+    let index = 0;
 
-    let colors = ['red', 'blue', 'green', 'yellow', 'purple'];
-    let i = 0;
-    let colorDiv = document.createElement('div');
-    colorDiv.style.width = '100px';
-    colorDiv.style.height = '100px';
-    colorDiv.style.margin = '20px auto';
-    container.appendChild(colorDiv);
-
-    function changeColor() {
-        if (i >= colors.length) i = 0;
-        colorDiv.style.background = colors[i];
-        i++;
-        setTimeout(changeColor, 3000);
+    function updateColor() {
+        document.body.style.backgroundColor = colors[index];
+        document.getElementById("instruction-text").innerText = `Назови этот цвет.`;
+        index = (index + 1) % colors.length;
     }
 
-    changeColor();
+    updateColor();
+    exerciseInterval = setInterval(updateColor, 5000);
 }
 
-function startTensionRelax() {
-    let container = document.getElementById('exercise-container');
-    container.innerHTML = '<h2>Напряжение и расслабление</h2><p>Сожми кулаки на 5 секунд...</p>';
+function startRelaxation() {
+    let steps = [
+        "Напряги кулаки на 5 секунд...",
+        "Расслабь кулаки...",
+        "Напряги плечи на 5 секунд...",
+        "Расслабь плечи...",
+        "Напряги ноги на 5 секунд...",
+        "Расслабь ноги..."
+    ];
 
-    setTimeout(() => {
-        container.innerHTML += '<p>Теперь расслабь руки...</p>';
-    }, 5000);
-    setTimeout(() => {
-        container.innerHTML += '<p>Сожми плечи...</p>';
-    }, 10000);
-    setTimeout(() => {
-        container.innerHTML += '<p>Теперь расслабь...</p>';
-    }, 15000);
+    let index = 0;
+    document.getElementById("instruction-text").innerText = steps[index];
+
+    function updateStep() {
+        index++;
+        if (index < steps.length) {
+            document.getElementById("instruction-text").innerText = steps[index];
+        } else {
+            clearInterval(exerciseInterval);
+            document.getElementById("instruction-text").innerText = "Ты молодец! Расслабление завершено.";
+        }
+    }
+
+    exerciseInterval = setInterval(updateStep, 5000);
 }
-
