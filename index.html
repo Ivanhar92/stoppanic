@@ -92,7 +92,6 @@
     </div>
 
     <script>
-        let totalExerciseTime = 60000; // 1 минута
         let running = false;
 
         function startExercise(title, steps, hasCircle = false) {
@@ -112,7 +111,7 @@
             }
 
             showNextStep(steps);
-            setTimeout(showSuccessMessage, totalExerciseTime);
+            setTimeout(showSuccessMessage, 60000);
         }
 
         function showNextStep(steps) {
@@ -128,7 +127,7 @@
                     }, 500);
                     
                     index++;
-                    setTimeout(nextStep, totalExerciseTime / steps.length);
+                    setTimeout(nextStep, 15000);
                 }
             }
             nextStep();
@@ -161,11 +160,21 @@
 
         function startBreathing() {
             startExercise("Дыхание", [
-                "Глубокий вдох (4 секунды)...",
+                "Вдох (4 секунды)...",
                 "Задержка (4 секунды)...",
                 "Выдох (6 секунд)...",
                 "Повтори 3 раза..."
             ], true);
+        }
+
+        function startGrounding() {
+            startExercise("Метод 5-4-3-2-1", [
+                "Назови 5 предметов вокруг себя...",
+                "Прислушайся к 4 звукам...",
+                "Ощути 3 текстуры...",
+                "Заметь 2 запаха...",
+                "Осознай 1 вкус..."
+            ]);
         }
 
         function resetExercise() {
