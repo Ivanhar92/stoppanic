@@ -57,10 +57,11 @@
             margin: 20px auto;
             opacity: 1;
             transform: scale(1);
-            transition: transform 4s ease-in-out;
+            transition: transform 4s ease-in-out, background-color 0.5s;
         }
         .big { transform: scale(1.5); }
         .small { transform: scale(1); }
+        .red { background-color: red; }
         .success-message {
             font-size: 18px;
             font-weight: bold;
@@ -91,10 +92,8 @@
     </div>
 
     <script>
-        let exerciseSteps = [];
-        let stepIndex = 0;
-        let exerciseInterval;
         let totalExerciseTime = 60000; // 1 минута
+        let running = false;
 
         function startExercise(title, steps, hasCircle = false) {
             document.querySelector(".container h2").classList.add("hidden");
@@ -106,33 +105,37 @@
             document.querySelector(".repeat").classList.add("hidden");
 
             document.getElementById("exercise-title").innerText = title;
-            exerciseSteps = steps;
-            stepIndex = 0;
 
             if (hasCircle) {
                 document.getElementById("circle").classList.remove("hidden");
                 animateBreathing();
             }
 
-            showNextStep();
+            showNextStep(steps);
             setTimeout(showSuccessMessage, totalExerciseTime);
         }
 
-        function showNextStep() {
-            if (stepIndex < exerciseSteps.length) {
-                let exerciseBox = document.getElementById("exercise-box");
-                exerciseBox.style.opacity = "0";
-                setTimeout(() => {
-                    exerciseBox.innerText = exerciseSteps[stepIndex];
-                    exerciseBox.style.opacity = "1";
-                }, 500);
-                
-                stepIndex++;
-                exerciseInterval = setTimeout(showNextStep, totalExerciseTime / exerciseSteps.length);
+        function showNextStep(steps) {
+            let exerciseBox = document.getElementById("exercise-box");
+            let index = 0;
+
+            function nextStep() {
+                if (index < steps.length) {
+                    exerciseBox.style.opacity = "0";
+                    setTimeout(() => {
+                        exerciseBox.innerText = steps[index];
+                        exerciseBox.style.opacity = "1";
+                    }, 500);
+                    
+                    index++;
+                    setTimeout(nextStep, totalExerciseTime / steps.length);
+                }
             }
+            nextStep();
         }
 
         function showSuccessMessage() {
+            document.getElementById("circle").classList.add("hidden");
             document.getElementById("exercise-box").style.opacity = "0";
             document.getElementById("success-message").classList.remove("hidden");
             document.querySelector(".stop").classList.remove("hidden");
@@ -141,14 +144,18 @@
 
         function animateBreathing() {
             let circle = document.getElementById("circle");
-            let state = true;
-
             function breathe() {
-                circle.className = state ? "circle big" : "circle small";
-                state = !state;
-                if (document.getElementById("circle").classList.contains("hidden")) return;
-                setTimeout(breathe, 4000);
+                circle.classList.add("big");
+                setTimeout(() => {
+                    circle.classList.add("red");
+                    setTimeout(() => {
+                        circle.classList.remove("red");
+                        circle.classList.remove("big");
+                        if (running) setTimeout(breathe, 6000);
+                    }, 4000);
+                }, 4000);
             }
+            running = true;
             breathe();
         }
 
@@ -157,51 +164,15 @@
                 "Глубокий вдох (4 секунды)...",
                 "Задержка (4 секунды)...",
                 "Выдох (6 секунд)...",
-                "Повтори 3 раза...",
-                "Глубокий вдох (4 секунды)...",
-                "Задержка (4 секунды)...",
-                "Выдох (6 секунд)..."
+                "Повтори 3 раза..."
             ], true);
-        }
-
-        function startGrounding() {
-            startExercise("Метод 5-4-3-2-1", [
-                "👀 Назови 5 предметов вокруг себя...",
-                "👂 Прислушайся к 4 звукам...",
-                "🤲 Ощути 3 текстуры...",
-                "👃 Заметь 2 запаха...",
-                "👅 Осознай 1 вкус..."
-            ]);
-        }
-
-        function startColors() {
-            let colors = ["#FF6347", "#FFD700", "#ADFF2F", "#1E90FF", "#DA70D6"];
-            let i = 0;
-
-            function changeColor() {
-                document.body.style.background = colors[i % colors.length];
-                i++;
-                if (document.getElementById("exercise").classList.contains("hidden")) return;
-                setTimeout(changeColor, 3000);
-            }
-
-            startExercise("Цветотерапия", [
-                "Посмотри вокруг и назови 3 предмета одного цвета...",
-                "Теперь выбери другой цвет и повтори...",
-                "Меняй цвета, пока не почувствуешь расслабление..."
-            ]);
-            changeColor();
         }
 
         function resetExercise() {
             document.getElementById("exercise").classList.add("hidden");
             document.querySelector(".container h2").classList.remove("hidden");
             document.querySelectorAll(".button").forEach(btn => btn.classList.remove("hidden"));
-        }
-
-        function restartExercise() {
-            stepIndex = 0;
-            showNextStep();
+            running = false;
         }
     </script>
 </body>
