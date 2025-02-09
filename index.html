@@ -3,186 +3,24 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Стоп Паника</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            text-align: center;
-            background: linear-gradient(to bottom, #6dd5ed, #2193b0);
-            padding: 20px;
-            color: white;
-        }
-        .container {
-            max-width: 400px;
-            margin: auto;
-            background: white;
-            padding: 20px;
-            border-radius: 10px;
-            box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.2);
-            color: black;
-        }
-        .button {
-            display: block;
-            width: 100%;
-            padding: 10px;
-            margin: 10px 0;
-            font-size: 18px;
-            border: none;
-            cursor: pointer;
-            border-radius: 5px;
-            font-weight: bold;
-        }
-        .breathing { background-color: #4CAF50; color: white; }
-        .grounding { background-color: #2196F3; color: white; }
-        .colors { background-color: #FF9800; color: white; }
-        .muscle { background-color: #9C27B0; color: white; }
-        .stop { background-color: #D32F2F; color: white; }
-        .repeat { background-color: #00796B; color: white; }
-        .hidden { display: none; }
-        .exercise-box {
-            margin-top: 20px;
-            font-size: 20px;
-            padding: 15px;
-            border-radius: 10px;
-            background: #e0f7fa;
-            min-height: 120px;
-            opacity: 0;
-            transition: opacity 1s ease-in-out;
-        }
-        .circle {
-            width: 100px;
-            height: 100px;
-            background-color: #4CAF50;
-            border-radius: 50%;
-            margin: 20px auto;
-            opacity: 1;
-            transform: scale(1);
-            transition: transform 4s ease-in-out, background-color 0.5s;
-        }
-        .big { transform: scale(1.5); }
-        .small { transform: scale(1); }
-        .red { background-color: red; }
-        .success-message {
-            font-size: 18px;
-            font-weight: bold;
-            margin-top: 20px;
-            color: #2E7D32;
-        }
-    </style>
+    <title>Stop Panic</title>
+    <link rel="stylesheet" href="style.css">
 </head>
 <body>
     <div class="container">
-        <h2>Выбери метод заземления</h2>
-        <button class="button breathing" onclick="startBreathing()">Дыхание</button>
-        <button class="button grounding" onclick="startGrounding()">Метод 5-4-3-2-1</button>
-        <button class="button colors" onclick="startColors()">Цветотерапия</button>
-        <button class="button muscle" onclick="startMuscleRelaxation()">Напряжение и расслабление</button>
-
-        <div id="exercise" class="hidden">
-            <h3 id="exercise-title"></h3>
-            <div id="circle" class="circle hidden"></div>
-            <div id="exercise-box" class="exercise-box"></div>
-            <div id="success-message" class="success-message hidden">
-                Отличная работа! 🎉 Ты уже на пути к улучшению самочувствия!  
-                Хочешь повторить или выбрать другое упражнение?
-            </div>
-            <button class="button stop hidden" onclick="resetExercise()">Выбрать другое</button>
-            <button class="button repeat hidden" onclick="restartExercise()">Повторить</button>
+        <h1 id="exercise-title">Выбери упражнение</h1>
+        <div id="exercise-container">
+            <button class="exercise-btn" onclick="startExercise('breathing')">Дыхание</button>
+            <button class="exercise-btn" onclick="startExercise('54321')">Метод 5-4-3-2-1</button>
+            <button class="exercise-btn" onclick="startExercise('colorTherapy')">Цветотерапия</button>
+            <button class="exercise-btn" onclick="startExercise('relaxation')">Напряжение и расслабление</button>
+        </div>
+        <div id="exercise-display" class="hidden">
+            <div id="breathing-circle"></div>
+            <p id="instruction-text"></p>
+            <button id="stop-btn" onclick="stopExercise()">Стоп</button>
         </div>
     </div>
-
-    <script>
-        let running = false;
-
-        function startExercise(title, steps, hasCircle = false) {
-            document.querySelector(".container h2").classList.add("hidden");
-            document.querySelectorAll(".button").forEach(btn => btn.classList.add("hidden"));
-            document.getElementById("exercise").classList.remove("hidden");
-            document.getElementById("circle").classList.add("hidden");
-            document.getElementById("success-message").classList.add("hidden");
-            document.querySelector(".stop").classList.remove("hidden");
-            document.querySelector(".repeat").classList.add("hidden");
-
-            document.getElementById("exercise-title").innerText = title;
-
-            if (hasCircle) {
-                document.getElementById("circle").classList.remove("hidden");
-                animateBreathing();
-            }
-
-            showNextStep(steps);
-            setTimeout(showSuccessMessage, 60000);
-        }
-
-        function showNextStep(steps) {
-            let exerciseBox = document.getElementById("exercise-box");
-            let index = 0;
-
-            function nextStep() {
-                if (index < steps.length) {
-                    exerciseBox.style.opacity = "0";
-                    setTimeout(() => {
-                        exerciseBox.innerText = steps[index];
-                        exerciseBox.style.opacity = "1";
-                    }, 500);
-                    
-                    index++;
-                    setTimeout(nextStep, 15000);
-                }
-            }
-            nextStep();
-        }
-
-        function showSuccessMessage() {
-            document.getElementById("circle").classList.add("hidden");
-            document.getElementById("exercise-box").style.opacity = "0";
-            document.getElementById("success-message").classList.remove("hidden");
-            document.querySelector(".stop").classList.remove("hidden");
-            document.querySelector(".repeat").classList.remove("hidden");
-        }
-
-        function animateBreathing() {
-            let circle = document.getElementById("circle");
-            function breathe() {
-                circle.classList.add("big");
-                setTimeout(() => {
-                    circle.classList.add("red");
-                    setTimeout(() => {
-                        circle.classList.remove("red");
-                        circle.classList.remove("big");
-                        if (running) setTimeout(breathe, 6000);
-                    }, 4000);
-                }, 4000);
-            }
-            running = true;
-            breathe();
-        }
-
-        function startBreathing() {
-            startExercise("Дыхание", [
-                "Вдох (4 секунды)...",
-                "Задержка (4 секунды)...",
-                "Выдох (6 секунд)...",
-                "Повтори 3 раза..."
-            ], true);
-        }
-
-        function startGrounding() {
-            startExercise("Метод 5-4-3-2-1", [
-                "Назови 5 предметов вокруг себя...",
-                "Прислушайся к 4 звукам...",
-                "Ощути 3 текстуры...",
-                "Заметь 2 запаха...",
-                "Осознай 1 вкус..."
-            ]);
-        }
-
-        function resetExercise() {
-            document.getElementById("exercise").classList.add("hidden");
-            document.querySelector(".container h2").classList.remove("hidden");
-            document.querySelectorAll(".button").forEach(btn => btn.classList.remove("hidden"));
-            running = false;
-        }
-    </script>
+    <script src="script.js"></script>
 </body>
 </html>
