@@ -8,8 +8,9 @@
         body {
             font-family: Arial, sans-serif;
             text-align: center;
-            background-color: #f0f8ff;
+            background: linear-gradient(to bottom, #6dd5ed, #2193b0);
             padding: 20px;
+            color: white;
         }
         .container {
             max-width: 400px;
@@ -17,7 +18,8 @@
             background: white;
             padding: 20px;
             border-radius: 10px;
-            box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+            box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.2);
+            color: black;
         }
         .button {
             display: block;
@@ -28,20 +30,41 @@
             border: none;
             cursor: pointer;
             border-radius: 5px;
+            font-weight: bold;
         }
         .breathing { background-color: #4CAF50; color: white; }
         .grounding { background-color: #2196F3; color: white; }
         .colors { background-color: #FF9800; color: white; }
         .muscle { background-color: #9C27B0; color: white; }
         .stop { background-color: #D32F2F; color: white; }
+        .repeat { background-color: #00796B; color: white; }
         .hidden { display: none; }
         .exercise-box {
             margin-top: 20px;
-            font-size: 18px;
-            padding: 10px;
+            font-size: 20px;
+            padding: 15px;
             border-radius: 10px;
             background: #e0f7fa;
-            min-height: 80px;
+            min-height: 120px;
+            opacity: 0;
+            transition: opacity 1s ease-in-out;
+        }
+        .circle {
+            width: 100px;
+            height: 100px;
+            background-color: #4CAF50;
+            border-radius: 50%;
+            margin: 20px auto;
+            opacity: 0;
+            transition: transform 4s ease-in-out, opacity 1s ease-in-out;
+        }
+        .big { transform: scale(1.5); opacity: 1; }
+        .small { transform: scale(1); opacity: 1; }
+        .success-message {
+            font-size: 18px;
+            font-weight: bold;
+            margin-top: 20px;
+            color: #2E7D32;
         }
     </style>
 </head>
@@ -55,8 +78,14 @@
 
         <div id="exercise" class="hidden">
             <h3 id="exercise-title"></h3>
+            <div id="circle" class="circle hidden"></div>
             <div id="exercise-box" class="exercise-box"></div>
-            <button class="button stop" onclick="resetExercise()">Стоп</button>
+            <div id="success-message" class="success-message hidden">
+                Отличная работа! 🎉 Ты уже на пути к улучшению самочувствия!  
+                Хочешь повторить или выбрать другое упражнение?
+            </div>
+            <button class="button stop hidden" onclick="resetExercise()">Выбрать другое</button>
+            <button class="button repeat hidden" onclick="restartExercise()">Повторить</button>
         </div>
     </div>
 
@@ -65,25 +94,61 @@
         let stepIndex = 0;
         let exerciseInterval;
 
-        function startExercise(title, steps) {
+        function startExercise(title, steps, hasCircle = false) {
             document.querySelector(".container h2").classList.add("hidden");
             document.querySelectorAll(".button").forEach(btn => btn.classList.add("hidden"));
             document.getElementById("exercise").classList.remove("hidden");
+            document.getElementById("circle").classList.add("hidden");
+            document.getElementById("success-message").classList.add("hidden");
+            document.querySelector(".stop").classList.add("hidden");
+            document.querySelector(".repeat").classList.add("hidden");
 
             document.getElementById("exercise-title").innerText = title;
             exerciseSteps = steps;
             stepIndex = 0;
+
+            if (hasCircle) {
+                document.getElementById("circle").classList.remove("hidden");
+                animateBreathing();
+            }
+
             showNextStep();
         }
 
         function showNextStep() {
             if (stepIndex < exerciseSteps.length) {
-                document.getElementById("exercise-box").innerText = exerciseSteps[stepIndex];
+                let exerciseBox = document.getElementById("exercise-box");
+                exerciseBox.style.opacity = "0";
+                setTimeout(() => {
+                    exerciseBox.innerText = exerciseSteps[stepIndex];
+                    exerciseBox.style.opacity = "1";
+                }, 500);
+                
                 stepIndex++;
-                exerciseInterval = setTimeout(showNextStep, 3000); // 3 секунды на каждое упражнение
+                exerciseInterval = setTimeout(showNextStep, 6000);
             } else {
-                resetExercise();
+                showSuccessMessage();
             }
+        }
+
+        function showSuccessMessage() {
+            document.getElementById("exercise-box").style.opacity = "0";
+            document.getElementById("success-message").classList.remove("hidden");
+            document.querySelector(".stop").classList.remove("hidden");
+            document.querySelector(".repeat").classList.remove("hidden");
+        }
+
+        function animateBreathing() {
+            let circle = document.getElementById("circle");
+            let state = true;
+
+            function breathe() {
+                circle.className = state ? "circle big" : "circle small";
+                state = !state;
+                if (document.getElementById("circle").classList.contains("hidden")) return;
+                setTimeout(breathe, 4000);
+            }
+            breathe();
         }
 
         function startBreathing() {
@@ -95,41 +160,56 @@
                 "Глубокий вдох (4 секунды)...",
                 "Задержка (4 секунды)...",
                 "Выдох (6 секунд)..."
-            ]);
+            ], true);
         }
 
         function startGrounding() {
             startExercise("Метод 5-4-3-2-1", [
-                "Назови 5 предметов вокруг себя...",
-                "Прислушайся к 4 звукам...",
-                "Ощути 3 текстуры...",
-                "Заметь 2 запаха...",
-                "Осознай 1 вкус..."
+                "👀 Назови 5 предметов вокруг себя...",
+                "👂 Прислушайся к 4 звукам...",
+                "🤲 Ощути 3 текстуры...",
+                "👃 Заметь 2 запаха...",
+                "👅 Осознай 1 вкус..."
             ]);
         }
 
         function startColors() {
+            let colors = ["#FF6347", "#FFD700", "#ADFF2F", "#1E90FF", "#DA70D6"];
+            let i = 0;
+
+            function changeColor() {
+                document.body.style.background = colors[i % colors.length];
+                i++;
+                if (document.getElementById("exercise").classList.contains("hidden")) return;
+                setTimeout(changeColor, 3000);
+            }
+
             startExercise("Цветотерапия", [
                 "Посмотри вокруг и назови 3 предмета одного цвета...",
                 "Теперь выбери другой цвет и повтори...",
                 "Меняй цвета, пока не почувствуешь расслабление..."
             ]);
+            changeColor();
         }
 
         function startMuscleRelaxation() {
             startExercise("Напряжение и расслабление", [
-                "Сильно сожми кулаки на 5 секунд... Расслабь.",
-                "Сожми плечи... Расслабь.",
-                "Сожми ноги... Расслабь.",
+                "✊ Сожми кулаки на 5 секунд... Расслабь.",
+                "🤷‍♂️ Подними плечи... Расслабь.",
+                "🦵 Напряги ноги... Расслабь.",
                 "Повтори 3 раза."
             ]);
         }
 
         function resetExercise() {
-            clearTimeout(exerciseInterval);
             document.getElementById("exercise").classList.add("hidden");
             document.querySelector(".container h2").classList.remove("hidden");
             document.querySelectorAll(".button").forEach(btn => btn.classList.remove("hidden"));
+        }
+
+        function restartExercise() {
+            stepIndex = 0;
+            showNextStep();
         }
     </script>
 </body>
