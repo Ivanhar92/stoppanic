@@ -33,7 +33,16 @@
         .grounding { background-color: #2196F3; color: white; }
         .colors { background-color: #FF9800; color: white; }
         .muscle { background-color: #9C27B0; color: white; }
+        .stop { background-color: #D32F2F; color: white; }
         .hidden { display: none; }
+        .exercise-box {
+            margin-top: 20px;
+            font-size: 18px;
+            padding: 10px;
+            border-radius: 10px;
+            background: #e0f7fa;
+            min-height: 80px;
+        }
     </style>
 </head>
 <body>
@@ -46,46 +55,81 @@
 
         <div id="exercise" class="hidden">
             <h3 id="exercise-title"></h3>
-            <p id="exercise-text"></p>
-            <button class="button" onclick="resetExercise()">Назад</button>
+            <div id="exercise-box" class="exercise-box"></div>
+            <button class="button stop" onclick="resetExercise()">Стоп</button>
         </div>
     </div>
 
     <script>
-        function startBreathing() {
-            document.getElementById("exercise-title").innerText = "Дыхание";
-            document.getElementById("exercise-text").innerHTML = "Глубокий вдох (4 секунды)...<br>Задержка (4 секунды)...<br>Выдох (6 секунд)...";
-            showExercise();
-        }
+        let exerciseSteps = [];
+        let stepIndex = 0;
+        let exerciseInterval;
 
-        function startGrounding() {
-            document.getElementById("exercise-title").innerText = "Метод 5-4-3-2-1";
-            document.getElementById("exercise-text").innerHTML = "Назови 5 предметов вокруг себя.<br>Прислушайся к 4 звукам.<br>Ощути 3 текстуры.<br>Заметь 2 запаха.<br>Осознай 1 вкус.";
-            showExercise();
-        }
-
-        function startColors() {
-            document.getElementById("exercise-title").innerText = "Цветотерапия";
-            document.getElementById("exercise-text").innerHTML = "Посмотри вокруг и назови 3 предмета одного цвета. Затем выбери другой цвет и повтори.";
-            showExercise();
-        }
-
-        function startMuscleRelaxation() {
-            document.getElementById("exercise-title").innerText = "Напряжение и расслабление";
-            document.getElementById("exercise-text").innerHTML = "Сильно сожми кулаки на 5 секунд... Расслабь.<br>Сожми плечи... Расслабь.<br>Сожми ноги... Расслабь.";
-            showExercise();
-        }
-
-        function showExercise() {
+        function startExercise(title, steps) {
             document.querySelector(".container h2").classList.add("hidden");
             document.querySelectorAll(".button").forEach(btn => btn.classList.add("hidden"));
             document.getElementById("exercise").classList.remove("hidden");
+
+            document.getElementById("exercise-title").innerText = title;
+            exerciseSteps = steps;
+            stepIndex = 0;
+            showNextStep();
+        }
+
+        function showNextStep() {
+            if (stepIndex < exerciseSteps.length) {
+                document.getElementById("exercise-box").innerText = exerciseSteps[stepIndex];
+                stepIndex++;
+                exerciseInterval = setTimeout(showNextStep, 3000); // 3 секунды на каждое упражнение
+            } else {
+                resetExercise();
+            }
+        }
+
+        function startBreathing() {
+            startExercise("Дыхание", [
+                "Глубокий вдох (4 секунды)...",
+                "Задержка (4 секунды)...",
+                "Выдох (6 секунд)...",
+                "Повтори 3 раза...",
+                "Глубокий вдох (4 секунды)...",
+                "Задержка (4 секунды)...",
+                "Выдох (6 секунд)..."
+            ]);
+        }
+
+        function startGrounding() {
+            startExercise("Метод 5-4-3-2-1", [
+                "Назови 5 предметов вокруг себя...",
+                "Прислушайся к 4 звукам...",
+                "Ощути 3 текстуры...",
+                "Заметь 2 запаха...",
+                "Осознай 1 вкус..."
+            ]);
+        }
+
+        function startColors() {
+            startExercise("Цветотерапия", [
+                "Посмотри вокруг и назови 3 предмета одного цвета...",
+                "Теперь выбери другой цвет и повтори...",
+                "Меняй цвета, пока не почувствуешь расслабление..."
+            ]);
+        }
+
+        function startMuscleRelaxation() {
+            startExercise("Напряжение и расслабление", [
+                "Сильно сожми кулаки на 5 секунд... Расслабь.",
+                "Сожми плечи... Расслабь.",
+                "Сожми ноги... Расслабь.",
+                "Повтори 3 раза."
+            ]);
         }
 
         function resetExercise() {
+            clearTimeout(exerciseInterval);
+            document.getElementById("exercise").classList.add("hidden");
             document.querySelector(".container h2").classList.remove("hidden");
             document.querySelectorAll(".button").forEach(btn => btn.classList.remove("hidden"));
-            document.getElementById("exercise").classList.add("hidden");
         }
     </script>
 </body>
