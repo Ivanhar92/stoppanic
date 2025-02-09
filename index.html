@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Стоп паника</title>
+    <style>
+        body {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background-color: #f0f0f0;
+            font-family: Arial, sans-serif;
+            text-align: center;
+        }
+        .circle, .hand, .color-box {
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            display: none;
+        }
+        .circle {
+            background-color: #3498db;
+        }
+        .hand {
+            background-color: #f39c12;
+        }
+        .color-box {
+            background-color: white;
+        }
+        .text {
+            margin-top: 20px;
+            font-size: 20px;
+            font-weight: bold;
+        }
+        .button-container {
+            margin-top: 30px;
+        }
+        .button {
+            padding: 10px 20px;
+            font-size: 16px;
+            background-color: #e74c3c;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            margin: 5px;
+        }
+        @keyframes breathe {
+            0% { transform: scale(1); }
+            30% { transform: scale(1.5); }
+            60% { transform: scale(1); }
+        }
+        @keyframes grip {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.2); }
+            100% { transform: scale(1); }
+        }
+    </style>
+</head>
+<body>
+    <div class="text" id="instruction">Выбери метод, который поможет тебе!</div>
+    <div id="colorBox" class="color-box"></div>
+    <div class="circle" id="circle"></div>
+    <div class="hand" id="hand"></div>
+
+    <div class="button-container">
+        <button class="button" onclick="startBreathing()">🌬 Дыхание 4-7-8</button>
+        <button class="button" onclick="grounding54321()">👁️ Метод 5-4-3-2-1</button>
+        <button class="button" onclick="colorTherapy()">🎨 Назови цвета</button>
+        <button class="button" onclick="sensoryGrounding()">✋ Сенсорное заземление</button>
+        <button class="button" onclick="physicalSwitch()">💪 Напряги мышцы</button>
+    </div>
+    <div class="button-container">
+        <button class="button" onclick="repeatExercise()" style="display:none;">🔄 Повторить</button>
+        <button class="button" onclick="closeApp()">❌ Закрыть</button>
+    </div>
+
+    <script>
+        function startBreathing() {
+            reset();
+            let text = document.getElementById("instruction");
+            let circle = document.getElementById("circle");
+            text.innerText = "Вдох на 4 секунды...";
+            circle.style.display = "block";
+            circle.style.animation = "breathe 4s linear infinite";
+
+            setTimeout(() => { text.innerText = "Задержи дыхание на 7 секунд..."; }, 4000);
+            setTimeout(() => { text.innerText = "Выдох на 8 секунд..."; }, 11000);
+            setTimeout(() => { 
+                text.innerText = "Ты молодец! Сейчас тебе уже станет лучше 😊"; 
+                circle.style.display = "none"; 
+                showRepeatButton();
+            }, 19000);
+        }
+
+        function grounding54321() {
+            reset();
+            let text = document.getElementById("instruction");
+            let steps = [
+                "👀 Назови 5 предметов вокруг себя...",
+                "👂 Назови 4 звука, которые слышишь...",
+                "🤲 Назови 3 вещи, которые можешь потрогать...",
+                "👃 Назови 2 запаха...",
+                "👅 Назови 1 вкус во рту..."
+            ];
+            let stepIndex = 0;
+
+            function guide() {
+                if (stepIndex < steps.length) {
+                    text.innerText = steps[stepIndex];
+                    stepIndex++;
+                    setTimeout(guide, 5000);
+                } else {
+                    text.innerText = "Ты молодец! Сейчас тебе уже станет лучше 😊";
+                    showRepeatButton();
+                }
+            }
+
+            guide();
+        }
+
+        function colorTherapy() {
+            reset();
+            let text = document.getElementById("instruction");
+            let colorBox = document.getElementById("colorBox");
+            let colors = ["red", "blue", "green", "yellow", "purple"];
+            let index = 0;
+
+            colorBox.style.display = "block";
+            text.innerText = "🎨 Назови цвет про себя...";
+            
+            function changeColor() {
+                if (index < colors.length) {
+                    colorBox.style.backgroundColor = colors[index];
+                    index++;
+                    setTimeout(changeColor, 3000);
+                } else {
+                    text.innerText = "Ты молодец! Сейчас тебе уже станет лучше 😊";
+                    colorBox.style.display = "none";
+                    showRepeatButton();
+                }
+            }
+
+            changeColor();
+        }
+
+        function sensoryGrounding() {
+            reset();
+            let text = document.getElementById("instruction");
+            text.innerText = "✋ Потрогай 3 предмета и назови их текстуру...";
+            setTimeout(() => {
+                text.innerText = "Ты молодец! Сейчас тебе уже станет лучше 😊";
+                showRepeatButton();
+            }, 10000);
+        }
+
+        function physicalSwitch() {
+            reset();
+            let text = document.getElementById("instruction");
+            let hand = document.getElementById("hand");
+            text.innerText = "💪 Сильно напряги все мышцы на 5 секунд...";
+            hand.style.display = "block";
+            hand.style.animation = "grip 5s linear infinite";
+
+            setTimeout(() => { text.innerText = "🧘 Теперь расслабься полностью..."; }, 5000);
+            setTimeout(() => { text.innerText = "🔥 Повтори ещё 2 раза"; }, 10000);
+            setTimeout(() => { 
+                text.innerText = "Ты молодец! Сейчас тебе уже станет лучше 😊"; 
+                hand.style.display = "none"; 
+                showRepeatButton();
+            }, 15000);
+        }
+
+        function reset() {
+            document.getElementById("instruction").innerText = "Выбери метод, который поможет тебе!";
+            document.getElementById("colorBox").style.display = "none";
+            document.getElementById("circle").style.display = "none";
+            document.getElementById("hand").style.display = "none";
+            document.querySelector(".button-container button:nth-child(1)").style.display = "inline-block";
+            document.querySelector(".button-container button:nth-child(2)").style.display = "none";
+        }
+
+        function showRepeatButton() {
+            document.querySelector(".button-container button:nth-child(1)").style.display = "none";
+            document.querySelector(".button-container button:nth-child(2)").style.display = "inline-block";
+        }
+
+        function closeApp() {
+            if (window.Telegram.WebApp) {
+                window.Telegram.WebApp.close();
+            } else {
+                alert("Закройте окно вручную.");
+            }
+        }
+    </script>
+</body>
+</html>
+
