@@ -55,11 +55,12 @@
             background-color: #4CAF50;
             border-radius: 50%;
             margin: 20px auto;
-            opacity: 0;
-            transition: transform 4s ease-in-out, opacity 1s ease-in-out;
+            opacity: 1;
+            transform: scale(1);
+            transition: transform 4s ease-in-out;
         }
-        .big { transform: scale(1.5); opacity: 1; }
-        .small { transform: scale(1); opacity: 1; }
+        .big { transform: scale(1.5); }
+        .small { transform: scale(1); }
         .success-message {
             font-size: 18px;
             font-weight: bold;
@@ -93,6 +94,7 @@
         let exerciseSteps = [];
         let stepIndex = 0;
         let exerciseInterval;
+        let totalExerciseTime = 60000; // 1 минута
 
         function startExercise(title, steps, hasCircle = false) {
             document.querySelector(".container h2").classList.add("hidden");
@@ -100,7 +102,7 @@
             document.getElementById("exercise").classList.remove("hidden");
             document.getElementById("circle").classList.add("hidden");
             document.getElementById("success-message").classList.add("hidden");
-            document.querySelector(".stop").classList.add("hidden");
+            document.querySelector(".stop").classList.remove("hidden");
             document.querySelector(".repeat").classList.add("hidden");
 
             document.getElementById("exercise-title").innerText = title;
@@ -113,6 +115,7 @@
             }
 
             showNextStep();
+            setTimeout(showSuccessMessage, totalExerciseTime);
         }
 
         function showNextStep() {
@@ -125,9 +128,7 @@
                 }, 500);
                 
                 stepIndex++;
-                exerciseInterval = setTimeout(showNextStep, 6000);
-            } else {
-                showSuccessMessage();
+                exerciseInterval = setTimeout(showNextStep, totalExerciseTime / exerciseSteps.length);
             }
         }
 
